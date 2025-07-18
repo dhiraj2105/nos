@@ -1,28 +1,45 @@
-# Cross-compiler
+# === Cross-compiler tools ===
 CC := i686-linux-gnu-gcc
 LD := i686-linux-gnu-ld
 AS := nasm
 
-# Flags
+# === Build flags ===
 CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 LDFLAGS := -T linker.ld -nostdlib
 ASFLAGS := -f elf32
 
-# Sources and Objects
-SRC := kernel/kernel.c
-OBJ := $(SRC:.c=.o)
+# === Paths ===
+KERNEL_SRC := kernel/kernel.c
+KERNEL_OBJ := kernel/kernel.o
 BOOT_OBJ := boot.o
 
-all: kernel.bin
+# === Targets ===
 
-boot.o: boot/boot.asm
+all: myos.iso
+
+# Assemble bootloader with multiboot header
+$(BOOT_OBJ): boot/boot.asm
 	$(AS) $(ASFLAGS) $< -o $@
 
-%.o: %.c
+# Compile C kernel
+$(KERNEL_OBJ): $(KERNEL_SRC)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-kernel.bin: $(BOOT_OBJ) $(OBJ)
+# Link to form the kernel ELF binary
+kernel.bin: $(BOOT_OBJ) $(KERNEL_OBJ)
 	$(LD) $(LDFLAGS) -o $@ $^
 
+# Create GRUB bootable ISO image
+myos.iso: kernel.bin
+	mkdir -p isodir/boot/grub
+	cp kernel.bin isodir/boot/kernel.bin
+	echo 'set timeout=0\nset default=0\nmenuentry "MyOS" {\nmultiboot /boot/kernel.bin\nboot\n}' > isodir/boot/grub/grub.cfg
+	grub-mkrescue -o myos.iso isodir
+
+# === Cleanup ===
+
 clean:
-	rm -f *.o kernel/*.o boot.o kernel.bin
+	rm -f *.o $(KERNEL_OBJ) kernel.bin
+
+cleanall: clean
+	rm -rf isodir myos.iso
