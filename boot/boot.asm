@@ -13,8 +13,8 @@ align 4
 
 section .text
 global _start
+extern kernel_main     ; declare symbol from C
 _start:
-    extern kernel_main     ; declare symbol from C
     call kernel_main       ; call into the C kernel
     cli                    ; disable interrupts
     hlt                    ; halt forever
