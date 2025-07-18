@@ -1,9 +1,8 @@
 section .multiboot
 align 4
-multiboot_header:
-    dd 0x1BADB002              ; magic number
-    dd 0x00                    ; flags
-    dd -(0x1BADB002)           ; checksum
+    dd 0x1BADB002
+    dd 0
+    dd -0x1BADB002
 
 section .text
 global _start
