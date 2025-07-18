@@ -1,13 +1,16 @@
+/*
+ * FILE: kernel.c
+ * ABOUT: Main entry point for the kernel after bootloader
+ * FEATURES: Prints initial messages using console system
+ * CHANGES: Phase 2 - Uses kprintf() for better output
+ */
+
+#include "kernel.h"
+#include "console.h"
+
 void kernel_main()
 {
-    const char *str = "Hello from DHIRAJ's New OS";
-    char *vidmem = (char *)0xb8000;
-    for (int i = 0; str[i] != '\0'; i++)
-    {
-        vidmem[i * 2] = str[i];
-        vidmem[i * 2 + 1] = 0x07;
-    }
-    while (1)
-    {
-    }
+    kprint("NOS v0.1\n");
+    kprintf("Welcome to DHRIAJ's NOS!\n");
+    kprintf("Screen initialized at address: 0x%x\n", (uint32_t)0xB8000);
 }

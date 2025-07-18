@@ -9,8 +9,8 @@ LDFLAGS := -T linker.ld -nostdlib
 ASFLAGS := -f elf32
 
 # === Paths ===
-KERNEL_SRC := kernel/kernel.c
-KERNEL_OBJ := kernel/kernel.o
+KERNEL_SRC := kernel/kernel.c kernel/console.c
+KERNEL_OBJ := $(SRC:.c=.o)
 BOOT_OBJ := boot.o
 
 # === Targets ===
