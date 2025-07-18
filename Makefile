@@ -10,7 +10,7 @@ ASFLAGS := -f elf32
 
 # === Paths ===
 KERNEL_SRC := kernel/kernel.c kernel/console.c
-KERNEL_OBJ := $(SRC:.c=.o)
+KERNEL_OBJ := $(KERNEL_SRC:.c=.o)
 BOOT_OBJ := boot.o
 
 # === Targets ===
@@ -21,11 +21,11 @@ all: myos.iso
 $(BOOT_OBJ): boot/boot.asm
 	$(AS) $(ASFLAGS) $< -o $@
 
-# Compile C kernel
-$(KERNEL_OBJ): $(KERNEL_SRC)
+# Pattern rule to compile C files
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Link to form the kernel ELF binary
+# Link all object files into final kernel ELF binary
 kernel.bin: $(BOOT_OBJ) $(KERNEL_OBJ)
 	$(LD) $(LDFLAGS) -o $@ $^
 
